@@ -43,3 +43,21 @@ IGNORE_PATTERNS = [
     r'.*\.log$',  # Log files
     r'shop_steward\.py$',  # The script itself
 ]
+
+# Custom patterns for extracting part numbers from filenames
+# Add your company's specific part number formats here
+CUSTOM_PART_NUMBER_PATTERNS = [
+    r'([A-Z0-9]{2,}-[A-Z0-9]{2,})',  # Format: ABC-123, XYZ-456A
+    r'([A-Z]{2,}\d{3,})',             # Format: ABC123, XYZ456
+    r'(\d{4,}-\d{2,})',               # Format: 1234-56, 12345-678
+    r'([A-Z]\d{4,})',                 # Format: A1234, X12345
+]
+
+# Custom patterns for extracting revision levels
+# Add your company's specific revision formats here
+CUSTOM_REVISION_PATTERNS = [
+    r'(?:REV|Rev|rev)[-_]?([A-Z0-9]+)',  # REV-A, Rev_B, revC
+    r'(?:R|r)(\d+)',                       # R1, r2
+    r'(?:V|v)(\d+)',                       # V1, v2
+    r'[-_]([A-Z])(?:[-_\.]|$)',           # -A, _B, .C
+]
