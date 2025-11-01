@@ -1,0 +1,3 @@
+# Shop Steward - Requirements
+# No external dependencies required for basic functionality
+# All functionality uses Python 3.6+ standard library

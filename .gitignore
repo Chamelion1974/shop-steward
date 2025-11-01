@@ -1,0 +1,88 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Logs
+*.log
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Shop Steward specific
+# Don't ignore the managed folders themselves, but ignore their contents
+CAD/*
+!CAD/.gitkeep
+CAM/*
+!CAM/.gitkeep
+NC Files/*
+!NC Files/.gitkeep
+!NC Files/PROVEN/
+!NC Files/UNPROVEN/
+NC Files/PROVEN/*
+!NC Files/PROVEN/.gitkeep
+NC Files/UNPROVEN/*
+!NC Files/UNPROVEN/.gitkeep
+MPI/*
+!MPI/.gitkeep
+ARCHIVE/*
+!ARCHIVE/.gitkeep
+HOLDING/*
+!HOLDING/.gitkeep
