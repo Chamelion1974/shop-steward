@@ -114,6 +114,28 @@ mv HOLDING/special_file.xyz CAD/special_file.xyz
 python3 /path/to/shop_steward.py --archive completed-project-folder
 ```
 
+### 6. Real-Time Monitoring (Hall Monitor Mode)
+
+Set up Shop Steward to watch a folder and automatically organize files:
+
+```bash
+# Install the watchdog library first (one time only)
+pip install watchdog
+
+# Start monitoring
+cd /path/to/my-shop
+python3 /path/to/shop_steward.py --monitor /path/to/dropbox
+
+# The script will run continuously and organize files as they arrive
+# Press Ctrl+C to stop
+```
+
+**What happens:**
+- Any file dropped into the monitored folder gets automatically organized
+- Files are categorized by type and moved to appropriate folders
+- Perfect for drop folders or network shares
+- All operations are logged
+
 ## Tips
 
 1. **Run dry-run first**: Always use `--dry-run` when organizing new file types
@@ -121,6 +143,7 @@ python3 /path/to/shop_steward.py --archive completed-project-folder
 3. **Verify UNPROVEN**: Always test NC files before moving to PROVEN
 4. **Review HOLDING**: Check HOLDING folder regularly for miscategorized files
 5. **Archive, don't delete**: Use the archive feature instead of deleting
+6. **Use monitoring for drop folders**: Set up `--monitor` on incoming directories for automatic organization
 
 ## File Types Reference
 

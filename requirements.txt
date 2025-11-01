@@ -1,3 +1,5 @@
 # Shop Steward - Requirements
-# No external dependencies required for basic functionality
-# All functionality uses Python 3.6+ standard library
+
+# Optional dependency for real-time monitoring (--monitor flag)
+# Basic file organization works without this dependency
+watchdog>=3.0.0
