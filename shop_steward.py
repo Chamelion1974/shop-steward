@@ -18,7 +18,6 @@ Folder Structure:
 
 """
 
-import os
 import shutil
 import argparse
 import logging
@@ -26,9 +25,19 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
 
+# Try to load custom configuration if it exists
+try:
+    from config import CUSTOM_FOLDERS, CUSTOM_FILE_CATEGORIES
+    USE_CUSTOM_CONFIG = True
+except ImportError:
+    USE_CUSTOM_CONFIG = False
+
 
 class ShopSteward:
     """Main class for organizing CNC programming files."""
+    
+    # Log filename constant
+    LOG_FILENAME = 'shop_steward.log'
     
     # Default folder structure
     FOLDERS = {
@@ -60,6 +69,12 @@ class ShopSteward:
         """
         self.root_dir = Path(root_dir).resolve()
         self.dry_run = dry_run
+        
+        # Load custom configuration if available
+        if USE_CUSTOM_CONFIG:
+            self.FOLDERS = CUSTOM_FOLDERS
+            self.FILE_CATEGORIES = CUSTOM_FILE_CATEGORIES
+            
         self.setup_logging()
         
     def setup_logging(self):
@@ -70,7 +85,7 @@ class ShopSteward:
             format=log_format,
             handlers=[
                 logging.StreamHandler(),
-                logging.FileHandler(self.root_dir / 'shop_steward.log')
+                logging.FileHandler(self.root_dir / self.LOG_FILENAME)
             ]
         )
         self.logger = logging.getLogger(__name__)
@@ -129,8 +144,12 @@ class ShopSteward:
         
         # Create subdirectory structure if preserving
         if preserve_structure:
-            rel_path = source.parent.relative_to(self.root_dir)
-            dest_dir = dest_dir / rel_path
+            try:
+                rel_path = source.parent.relative_to(self.root_dir)
+                dest_dir = dest_dir / rel_path
+            except ValueError:
+                # Source is not within root_dir, don't preserve structure
+                self.logger.debug(f"Source {source} not in root_dir, not preserving structure")
             
         # Ensure destination directory exists
         if not self.dry_run:
@@ -187,12 +206,18 @@ class ShopSteward:
         
         for file_path in file_pattern:
             # Skip directories, hidden files, and log files
-            if not file_path.is_file() or file_path.name.startswith('.') or file_path.name == 'shop_steward.log':
+            if not file_path.is_file() or file_path.name.startswith('.') or file_path.name == self.LOG_FILENAME:
                 continue
                 
             # Skip files already in managed folders
-            if any(str(file_path).startswith(str(folder)) for folder in managed_folders):
-                continue
+            try:
+                # Check if file is in any managed folder
+                if any(file_path.is_relative_to(folder) for folder in managed_folders):
+                    continue
+            except (ValueError, TypeError):
+                # Fallback for Python < 3.9 or edge cases
+                if any(str(file_path).startswith(str(folder)) for folder in managed_folders):
+                    continue
                 
             files_processed += 1
             

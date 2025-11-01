@@ -1,7 +1,14 @@
 """
 Shop Steward Configuration Example
 
-Copy this file to config.py and customize as needed.
+This configuration file is OPTIONAL. The script works with default settings.
+
+To use custom settings:
+1. Copy this file to config.py
+2. Customize the values below
+3. The script will automatically load config.py if it exists
+
+Note: All settings have sensible defaults in shop_steward.py
 """
 
 # Custom folder names (if you want to use different names)
