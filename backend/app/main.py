@@ -50,6 +50,26 @@ async def lifespan(app: FastAPI):
     finally:
         db.close()
 
+    # Load and register modules
+    print("🧩 Loading modules...")
+    from .modules.loader import load_modules, sync_modules_to_database
+
+    try:
+        loaded_modules = load_modules()
+        print(f"✅ Loaded {len(loaded_modules)} modules:")
+        for module_name, module in loaded_modules.items():
+            print(f"   - {module.display_name} v{module.version}")
+
+        # Sync modules to database
+        print("💾 Syncing modules to database...")
+        sync_modules_to_database()
+        print("✅ Module sync complete")
+
+    except Exception as e:
+        print(f"⚠️  Error loading modules: {e}")
+        import traceback
+        traceback.print_exc()
+
     print("✨ The Hub is ready!")
 
     yield

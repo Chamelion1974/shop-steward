@@ -10,6 +10,12 @@ from ..models.user import User
 from ..models.module import Module, ModuleStatus
 from ..schemas.module import ModuleResponse, ModuleConfig
 from ..core.auth import require_hub_master
+from ..modules.loader import (
+    activate_module_from_db,
+    deactivate_module_from_db,
+    update_module_config_in_db,
+    get_module_from_registry
+)
 
 
 router = APIRouter()
@@ -64,10 +70,16 @@ async def activate_module(
             detail="Module not found"
         )
 
-    module.status = ModuleStatus.ACTIVE
-    db.commit()
-    db.refresh(module)
+    # Use loader to activate the module in the registry
+    success = activate_module_from_db(module_id, db)
 
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to activate module"
+        )
+
+    db.refresh(module)
     return module
 
 
@@ -88,10 +100,16 @@ async def deactivate_module(
             detail="Module not found"
         )
 
-    module.status = ModuleStatus.INACTIVE
-    db.commit()
-    db.refresh(module)
+    # Use loader to deactivate the module in the registry
+    success = deactivate_module_from_db(module_id, db)
 
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to deactivate module"
+        )
+
+    db.refresh(module)
     return module
 
 
@@ -113,10 +131,16 @@ async def update_module_config(
             detail="Module not found"
         )
 
-    module.config = config_data.config
-    db.commit()
-    db.refresh(module)
+    # Use loader to update config in the registry
+    success = update_module_config_in_db(module_id, config_data.config, db)
 
+    if not success:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update module config"
+        )
+
+    db.refresh(module)
     return module
 
 
@@ -137,10 +161,25 @@ async def get_module_metrics(
             detail="Module not found"
         )
 
-    return {
-        "module_id": module.id,
-        "module_name": module.name,
-        "metrics": module.metrics,
-        "last_run": module.last_run,
-        "status": module.status
-    }
+    # Try to get live metrics from registry
+    try:
+        live_module = get_module_from_registry(module.name)
+        live_status = live_module.get_status()
+
+        return {
+            "module_id": module.id,
+            "module_name": module.name,
+            "metrics": live_module.get_metrics(),
+            "last_run": module.last_run,
+            "status": module.status,
+            "live_status": live_status
+        }
+    except (ValueError, Exception):
+        # Fallback to database metrics if module not in registry
+        return {
+            "module_id": module.id,
+            "module_name": module.name,
+            "metrics": module.metrics,
+            "last_run": module.last_run,
+            "status": module.status
+        }
