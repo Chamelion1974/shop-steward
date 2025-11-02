@@ -1,12 +1,45 @@
-# Shop Steward
+# Shop Steward - The Hub
 
-**Server folder housekeeping and maintenance for CNC Programming**
+**Production Command Center for CNC Machine Shops**
 
-Shop Steward is a file organization system for machine shops that automatically categorizes and organizes CNC programming files into a standardized folder structure. It acts as a "housekeeper" or "hall monitor" that captures errant files and places them in appropriate folders based on their file type and purpose.
+Shop Steward is a comprehensive production management ecosystem for CNC machine shops and manufacturing environments. At its core is **The Hub**, a central command center and dashboard that coordinates job tracking, task management, team collaboration, and intelligent file organization through an extensible module system.
+
+## System Components
+
+- **The Hub**: Full-stack web application with role-based dashboards
+- **Housekeeper Module**: Automated file organization and maintenance
+- **Manufacturing Intelligence**: CNC program analysis and optimization
+- **Workflow System**: Job tracking and programmer assignment
+- **Module Framework**: Extensible plugin architecture
 
 ## Features
 
-### File Organization
+### The Hub - Central Command Center
+
+#### For Hub Masters (Production Managers)
+- 📊 **System Dashboard**: Real-time overview of jobs, tasks, and team performance
+- 👥 **User Management**: Create and manage Hub Caps (programmers/operators)
+- 🎛️ **Module Control**: Deploy, configure, and monitor system modules
+- 📈 **Analytics**: Production metrics, bottleneck detection, and performance insights
+- 🔧 **System Configuration**: Manage workflows, permissions, and integrations
+
+#### For Hub Caps (CNC Programmers/Operators)
+- ✅ **Task Queue**: Personalized dashboard of assigned tasks
+- 💬 **Collaboration**: Comment and communicate on tasks and jobs
+- 📁 **File Management**: Upload CAD files, CNC programs, and documentation
+- ⏱️ **Time Tracking**: Log actual hours vs estimates for continuous improvement
+- 🔔 **Real-time Notifications**: Stay updated on job assignments and status changes
+
+#### Core Hub Capabilities
+- 🎯 **Job Portal**: Central intake for all production work
+- 📝 **Shop Task Manager**: Intelligent task breakdown and assignment
+- 🔄 **Real-time Updates**: Live status changes via WebSocket connections
+- 🔐 **Role-Based Security**: Granular permissions and access control
+- 🧩 **Module System**: Plug-and-play architecture for custom extensions
+- 📊 **Activity Logging**: Complete audit trail of all operations
+- 🔍 **Search & Filter**: Find jobs, tasks, and files quickly
+
+### File Organization (Housekeeper Module)
 - 🗂️ **Automated File Organization**: Categorizes files based on extensions
 - 📁 **Standardized Folder Structure**: Creates and maintains consistent folder hierarchy
 - 🏗️ **Hierarchical Organization**: Supports Customer → Part# + Revision structure
@@ -76,9 +109,55 @@ ProgrammingServer/
 - Supports document control and revision management (ISO13485, AS9100)
 - Scales well for shops with multiple customers and hundreds of parts
 
-## Installation
+## Quick Start - The Hub
 
-1. Clone the repository:
+### Prerequisites
+- Python 3.11 or higher
+- Node.js 18 or higher
+- npm or yarn
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/Chamelion1974/shop-steward.git
+cd shop-steward
+```
+
+### 2. Start the Backend
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Backend will be available at: http://localhost:8000
+API documentation at: http://localhost:8000/api/docs
+
+### 3. Start the Frontend (new terminal)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend will be available at: http://localhost:5173
+
+### 4. Login
+```
+Username: admin
+Password: admin123
+```
+
+⚠️ **Change the default password immediately after first login!**
+
+---
+
+## Installation - Housekeeper Module (CLI)
+
+For standalone file organization without The Hub:
+
+1. Clone the repository (if not already done):
 ```bash
 git clone https://github.com/Chamelion1974/shop-steward.git
 cd shop-steward
@@ -366,7 +445,95 @@ All operations are logged to `shop_steward.log` in the root directory. The log i
 - **HOLDING Folder**: Unrecognizable files are held for manual review
 - **Dry Run**: Test operations before executing them
 
-## Workflow Management
+## Using The Hub
+
+### Hub Master Interface
+
+As a Hub Master (production manager), you have full control over the system:
+
+**Dashboard**
+- View system-wide metrics and status
+- Monitor active jobs and tasks
+- Track team workload and capacity
+- Check module health and performance
+
+**Job Management**
+- Create new jobs from customer requests
+- Assign jobs to programmers (Hub Caps)
+- Set priorities and deadlines
+- Track job progress through workflow states
+
+**Task Management**
+- Break jobs down into tasks
+- Assign tasks based on skills and workload
+- Monitor task dependencies and blockers
+- View detailed task timelines
+
+**Module Management**
+- Activate/deactivate modules (Housekeeper, Manufacturing Intelligence, etc.)
+- Configure module settings
+- View module performance metrics
+- Deploy new modules
+
+**User Management**
+- Create Hub Cap accounts
+- Set skills and capabilities
+- Manage permissions
+- Track individual performance
+
+### Hub Caps Interface
+
+As a Hub Cap (CNC programmer/operator), you focus on executing work:
+
+**My Dashboard**
+- View your assigned tasks
+- See pending work in your queue
+- Track your active jobs
+- Check completion stats
+
+**Task Execution**
+- Start/pause/complete tasks
+- Add time tracking information
+- Upload completed files
+- Add comments and updates
+- Report blockers or issues
+
+**Collaboration**
+- Comment on tasks and jobs
+- @mention team members
+- Share files and screenshots
+- Request reviews
+
+### API Access
+
+The Hub provides a full REST API for integrations:
+
+**Documentation**: http://localhost:8000/api/docs
+
+**Key Endpoints**:
+- `/api/auth/*` - Authentication
+- `/api/jobs/*` - Job management
+- `/api/tasks/*` - Task management
+- `/api/users/*` - User management (Hub Master)
+- `/api/modules/*` - Module management (Hub Master)
+
+**Example API Usage**:
+```python
+import requests
+
+# Login
+response = requests.post('http://localhost:8000/api/auth/login',
+    data={'username': 'admin', 'password': 'admin123'})
+token = response.json()['access_token']
+
+# Get jobs
+headers = {'Authorization': f'Bearer {token}'}
+jobs = requests.get('http://localhost:8000/api/jobs', headers=headers).json()
+```
+
+---
+
+## Workflow Management (Legacy CLI)
 
 Shop Steward includes a complete workflow management system for tracking CNC programming jobs. See [WORKFLOW.md](WORKFLOW.md) for detailed documentation.
 
