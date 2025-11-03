@@ -24,13 +24,6 @@ class ActivityLog(Base):
 
     # Relationships
     user = relationship("User", back_populates="activity_logs")
-    # Polymorphic relationships for different entity types
-    job = relationship("Job", back_populates="activity_logs", foreign_keys="ActivityLog.entity_id",
-                      primaryjoin="and_(ActivityLog.entity_id==Job.id, ActivityLog.entity_type=='job')",
-                      viewonly=True)
-    task = relationship("Task", back_populates="activity_logs", foreign_keys="ActivityLog.entity_id",
-                       primaryjoin="and_(ActivityLog.entity_id==Task.id, ActivityLog.entity_type=='task')",
-                       viewonly=True)
 
     def __repr__(self):
         return f"<ActivityLog {self.action} on {self.entity_type}:{self.entity_id}>"

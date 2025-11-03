@@ -20,7 +20,7 @@ class JobCreate(JobBase):
     """Job creation schema."""
     job_number: Optional[str] = None  # Auto-generated if not provided
     assigned_to: Optional[str] = None
-    metadata: Dict[str, Any] = {}
+    job_metadata: Dict[str, Any] = {}
 
 
 class JobUpdate(BaseModel):
@@ -32,7 +32,7 @@ class JobUpdate(BaseModel):
     status: Optional[JobStatus] = None
     deadline: Optional[datetime] = None
     assigned_to: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    job_metadata: Optional[Dict[str, Any]] = None
 
 
 class JobResponse(JobBase):
@@ -41,7 +41,7 @@ class JobResponse(JobBase):
     job_number: str
     status: JobStatus
     files: List[Dict[str, Any]]
-    metadata: Dict[str, Any]
+    job_metadata: Dict[str, Any]
     created_by: str
     assigned_to: Optional[str]
     created_at: datetime

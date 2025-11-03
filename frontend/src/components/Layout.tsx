@@ -9,7 +9,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  UserCog
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
@@ -54,6 +55,11 @@ export default function Layout({ children }: LayoutProps) {
         icon: Settings,
       }
     ] : []),
+    {
+      name: 'Settings',
+      href: '/settings',
+      icon: UserCog,
+    },
   ];
 
   return (

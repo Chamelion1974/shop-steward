@@ -111,45 +111,52 @@ ProgrammingServer/
 
 ## Quick Start - The Hub
 
-### Prerequisites
-- Python 3.11 or higher
-- Node.js 18 or higher
-- npm or yarn
+### Easy Installation
 
-### 1. Clone the repository
+**Windows:**
+```powershell
+git clone https://github.com/Chamelion1974/shop-steward.git
+cd shop-steward
+.\install.ps1
+.\start.ps1
+```
+
+**Linux/Mac:**
 ```bash
 git clone https://github.com/Chamelion1974/shop-steward.git
 cd shop-steward
+chmod +x install.sh start.sh
+./install.sh
+./start.sh
 ```
 
-### 2. Start the Backend
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+That's it! The installation script will:
+- ✓ Check prerequisites (Python 3.11+, Node.js 18+)
+- ✓ Create Python virtual environment
+- ✓ Install all backend dependencies
+- ✓ Install all frontend dependencies
+- ✓ Set up configuration files
+- ✓ Create necessary directories
 
-Backend will be available at: http://localhost:8000
-API documentation at: http://localhost:8000/api/docs
+### Access the Hub
 
-### 3. Start the Frontend (new terminal)
-```bash
-cd frontend
-npm install
-npm run dev
-```
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/api/docs
 
-Frontend will be available at: http://localhost:5173
-
-### 4. Login
+### Default Login
 ```
 Username: admin
 Password: admin123
 ```
 
-⚠️ **Change the default password immediately after first login!**
+⚠️ **Change the default password immediately after first login!** Go to Settings → Password after logging in.
+
+### Detailed Installation
+
+For detailed installation instructions, troubleshooting, and production deployment, see [INSTALL.md](INSTALL.md).
+
+For quick command reference, see [QUICK_REFERENCE.md](QUICK_REFERENCE.md).
 
 ---
 

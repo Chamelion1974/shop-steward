@@ -63,7 +63,6 @@ class Task(Base):
     # Relationships
     job = relationship("Job", back_populates="tasks")
     assignee = relationship("User", back_populates="assigned_tasks")
-    activity_logs = relationship("ActivityLog", back_populates="task")
 
     def __repr__(self):
         return f"<Task {self.title} - {self.status}>"

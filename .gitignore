@@ -97,3 +97,7 @@ HOLDING/*
 /node_modules
 /frontend/node_modules
 
+
+# Database files
+*.db
+

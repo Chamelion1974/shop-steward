@@ -73,3 +73,9 @@ class UserLogin(BaseModel):
     """User login schema."""
     username: str
     password: str
+
+
+class PasswordChange(BaseModel):
+    """Password change schema."""
+    current_password: str
+    new_password: str = Field(..., min_length=8)
