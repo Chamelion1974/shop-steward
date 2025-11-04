@@ -27,7 +27,7 @@ class UserBase(BaseModel):
     """Base user schema."""
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    full_name: str = Field(..., min_length=1, max_length=100)
+    full_name: str = Field(default="", max_length=100)
     role: UserRole = UserRole.HUB_CAP
     skills: List[str] = []
 
@@ -40,7 +40,7 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     """User update schema."""
     email: Optional[EmailStr] = None
-    full_name: Optional[str] = Field(None, min_length=1, max_length=100)
+    full_name: Optional[str] = Field(None, max_length=100)
     role: Optional[UserRole] = None
     skills: Optional[List[str]] = None
     is_active: Optional[bool] = None

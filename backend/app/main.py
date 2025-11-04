@@ -37,7 +37,7 @@ async def lifespan(app: FastAPI):
             admin = User(
                 id=str(uuid.uuid4()),
                 username="admin",
-                email="admin@shopsteward.local",
+                email="camprocsol@gmail.com",
                 full_name="",
                 hashed_password=get_password_hash("admin123"),
                 role=UserRole.HUB_MASTER,
