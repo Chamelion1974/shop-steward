@@ -8,8 +8,15 @@ import { User, Lock, Save, AlertCircle, CheckCircle } from 'lucide-react';
 import { api } from '../services/api';
 
 export default function SettingsPage() {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
+
+  // Profile edit state
+  const [fullName, setFullName] = useState(user?.full_name || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [isUpdatingProfile, setIsUpdatingProfile] = useState(false);
+  const [profileError, setProfileError] = useState('');
+  const [profileSuccess, setProfileSuccess] = useState('');
 
   // Password change state
   const [currentPassword, setCurrentPassword] = useState('');
@@ -18,6 +25,33 @@ export default function SettingsPage() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileError('');
+    setProfileSuccess('');
+
+    setIsUpdatingProfile(true);
+
+    try {
+      const updatedUser = await api.updateProfile({
+        full_name: fullName,
+        email: email,
+      });
+
+      setUser(updatedUser);
+      setProfileSuccess('Profile updated successfully!');
+
+      // Clear success message after 5 seconds
+      setTimeout(() => setProfileSuccess(''), 5000);
+    } catch (error: any) {
+      setProfileError(
+        error.response?.data?.detail || 'Failed to update profile. Please try again.'
+      );
+    } finally {
+      setIsUpdatingProfile(false);
+    }
+  };
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,10 +72,7 @@ export default function SettingsPage() {
     setIsChangingPassword(true);
 
     try {
-      await api.post('/users/me/change-password', {
-        current_password: currentPassword,
-        new_password: newPassword,
-      });
+      await api.changePassword(currentPassword, newPassword);
 
       setPasswordSuccess('Password changed successfully!');
       setCurrentPassword('');
@@ -102,61 +133,88 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 <h2 className="text-xl font-semibold text-slate-900">Profile Information</h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      value={user?.username || ''}
-                      disabled
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
-                    />
+                {profileError && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
+                    <AlertCircle className="w-5 h-5 text-red-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-red-800">{profileError}</p>
+                  </div>
+                )}
+
+                {profileSuccess && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
+                    <CheckCircle className="w-5 h-5 text-green-600 mr-3 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-green-800">{profileSuccess}</p>
+                  </div>
+                )}
+
+                <form onSubmit={handleProfileUpdate} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Username
+                      </label>
+                      <input
+                        type="text"
+                        value={user?.username || ''}
+                        disabled
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Username cannot be changed</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        required
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-hub-primary focus:border-transparent"
+                        placeholder="Enter your full name"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-hub-primary focus:border-transparent"
+                        placeholder="your.email@example.com"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Role
+                      </label>
+                      <input
+                        type="text"
+                        value={user?.role === 'hub_master' ? 'Hub Master' : 'Hub Cap'}
+                        disabled
+                        className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">Role is managed by Hub Masters</p>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={user?.full_name || ''}
-                      disabled
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
-                    />
+                  <div className="pt-4">
+                    <button
+                      type="submit"
+                      disabled={isUpdatingProfile}
+                      className="inline-flex items-center px-6 py-2 bg-hub-primary text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-slate-400 disabled:cursor-not-allowed"
+                    >
+                      <Save className="w-5 h-5 mr-2" />
+                      {isUpdatingProfile ? 'Updating Profile...' : 'Update Profile'}
+                    </button>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={user?.email || ''}
-                      disabled
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Role
-                    </label>
-                    <input
-                      type="text"
-                      value={user?.role === 'HUB_MASTER' ? 'Hub Master' : 'Hub Cap'}
-                      disabled
-                      className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
-                    />
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-blue-800">
-                    <strong>Note:</strong> To update your profile information, please contact a Hub Master.
-                  </p>
-                </div>
+                </form>
               </div>
             )}
 

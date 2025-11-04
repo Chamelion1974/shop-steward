@@ -17,6 +17,11 @@ import type {
 
 class ApiService {
   private client: AxiosInstance;
+  private isRefreshing = false;
+  private failedQueue: Array<{
+    resolve: (value?: any) => void;
+    reject: (reason?: any) => void;
+  }> = [];
 
   constructor() {
     this.client = axios.create({
@@ -46,7 +51,20 @@ class ApiService {
 
         // If 401 and not already retried, try to refresh token
         if (error.response?.status === 401 && !originalRequest._retry) {
+          if (this.isRefreshing) {
+            // Queue requests while refresh is in progress
+            return new Promise((resolve, reject) => {
+              this.failedQueue.push({ resolve, reject });
+            })
+              .then((token) => {
+                originalRequest.headers.Authorization = `Bearer ${token}`;
+                return this.client(originalRequest);
+              })
+              .catch((err) => Promise.reject(err));
+          }
+
           originalRequest._retry = true;
+          this.isRefreshing = true;
 
           const refreshToken = localStorage.getItem('refresh_token');
           if (refreshToken) {
@@ -59,14 +77,23 @@ class ApiService {
               localStorage.setItem('access_token', access_token);
               localStorage.setItem('refresh_token', refresh_token);
 
+              // Process queued requests
+              this.failedQueue.forEach((prom) => prom.resolve(access_token));
+              this.failedQueue = [];
+
               originalRequest.headers.Authorization = `Bearer ${access_token}`;
               return this.client(originalRequest);
             } catch (refreshError) {
-              // Refresh failed, logout user
+              // Refresh failed, reject all queued requests and logout
+              this.failedQueue.forEach((prom) => prom.reject(refreshError));
+              this.failedQueue = [];
+
               localStorage.removeItem('access_token');
               localStorage.removeItem('refresh_token');
               window.location.href = '/login';
               return Promise.reject(refreshError);
+            } finally {
+              this.isRefreshing = false;
             }
           }
         }
@@ -199,12 +226,31 @@ class ApiService {
   }
 
   async updateModuleConfig(id: string, config: Record<string, any>): Promise<Module> {
+    // Validate that config is a plain object
+    if (!config || typeof config !== 'object' || Array.isArray(config)) {
+      throw new Error('Module config must be a valid object');
+    }
+
     const response = await this.client.patch<Module>(`/modules/${id}/config`, { config });
     return response.data;
   }
 
   async getModuleMetrics(id: string): Promise<any> {
     const response = await this.client.get(`/modules/${id}/metrics`);
+    return response.data;
+  }
+
+  // Password change endpoint
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    await this.client.post('/users/me/change-password', {
+      current_password: currentPassword,
+      new_password: newPassword,
+    });
+  }
+
+  // Update current user profile
+  async updateProfile(data: { full_name?: string; email?: string }): Promise<User> {
+    const response = await this.client.patch<User>('/users/me', data);
     return response.data;
   }
 }

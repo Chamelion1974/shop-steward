@@ -179,3 +179,17 @@ export interface UpdateTaskData {
   dependencies?: string[];
   blockers?: string;
 }
+
+export interface HousekeeperConfig {
+  root_dir: string;
+  hierarchical: boolean;
+  enforce_naming: boolean;
+  auto_rename: boolean;
+  monitor_path?: string;
+}
+
+export interface WorkflowManagerConfig {
+  workflow_dir: string;
+}
+
+export type ModuleConfig = HousekeeperConfig | WorkflowManagerConfig | Record<string, any>;
