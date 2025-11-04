@@ -5,13 +5,12 @@ import { useState } from 'react';
 import Layout from '../components/Layout';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
-import { UserPlus, Edit2, UserX, Shield, User as UserIcon, Mail, AlertCircle, CheckCircle } from 'lucide-react';
+import { UserPlus, UserX, Shield, User as UserIcon, Mail, AlertCircle, CheckCircle } from 'lucide-react';
 import { User, UserRole } from '../types';
 
 export default function UsersPage() {
   const queryClient = useQueryClient();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
 
   // Fetch users
   const { data: users, isLoading } = useQuery({
@@ -55,14 +54,13 @@ export default function UsersPage() {
   });
 
   // Update user mutation
+  // Update user mutation
   const updateUserMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => api.updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      setEditingUser(null);
     },
   });
-
   // Deactivate user mutation
   const deactivateUserMutation = useMutation({
     mutationFn: (id: string) => api.deleteUser(id),
@@ -336,6 +334,7 @@ export default function UsersPage() {
                         value={newUser.role}
                         onChange={(e) => setNewUser({ ...newUser, role: e.target.value as UserRole })}
                         className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-hub-primary focus:border-transparent"
+                        title="Select user role"
                       >
                         <option value={UserRole.HUB_CAP}>Hub Cap (Programmer/Operator)</option>
                         <option value={UserRole.HUB_MASTER}>Hub Master (Manager)</option>
