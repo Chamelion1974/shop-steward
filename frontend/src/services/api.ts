@@ -204,6 +204,33 @@ class ApiService {
     return response.data;
   }
 
+  async createUser(data: {
+    username: string;
+    email: string;
+    full_name: string;
+    password: string;
+    role: string;
+    skills?: string[];
+  }): Promise<User> {
+    const response = await this.client.post<User>('/users', data);
+    return response.data;
+  }
+
+  async updateUser(id: string, data: {
+    email?: string;
+    full_name?: string;
+    role?: string;
+    skills?: string[];
+    is_active?: boolean;
+  }): Promise<User> {
+    const response = await this.client.patch<User>(`/users/${id}`, data);
+    return response.data;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await this.client.delete(`/users/${id}`);
+  }
+
   // Module endpoints
   async getModules(): Promise<Module[]> {
     const response = await this.client.get<Module[]>('/modules');

@@ -14,6 +14,7 @@ import HubCapsDashboard from './pages/HubCapsDashboard';
 import JobsPage from './pages/JobsPage';
 import TasksPage from './pages/TasksPage';
 import ModulesPage from './pages/ModulesPage';
+import UsersPage from './pages/UsersPage';
 import SettingsPage from './pages/SettingsPage';
 
 // Create React Query client
@@ -123,6 +124,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={[UserRole.HUB_MASTER]}>
                 <ModulesPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.HUB_MASTER]}>
+                <UsersPage />
               </ProtectedRoute>
             }
           />

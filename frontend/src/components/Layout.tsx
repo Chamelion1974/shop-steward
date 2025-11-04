@@ -10,7 +10,8 @@ import {
   LogOut,
   Menu,
   X,
-  UserCog
+  UserCog,
+  Users
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
@@ -49,6 +50,11 @@ export default function Layout({ children }: LayoutProps) {
       icon: CheckSquare,
     },
     ...(isHubMaster ? [
+      {
+        name: 'Users',
+        href: '/users',
+        icon: Users,
+      },
       {
         name: 'Modules',
         href: '/modules',
