@@ -9,7 +9,9 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  UserCog,
+  Users
 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
@@ -49,11 +51,21 @@ export default function Layout({ children }: LayoutProps) {
     },
     ...(isHubMaster ? [
       {
+        name: 'Users',
+        href: '/users',
+        icon: Users,
+      },
+      {
         name: 'Modules',
         href: '/modules',
         icon: Settings,
       }
     ] : []),
+    {
+      name: 'Settings',
+      href: '/settings',
+      icon: UserCog,
+    },
   ];
 
   return (
@@ -71,6 +83,7 @@ export default function Layout({ children }: LayoutProps) {
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden text-white hover:text-slate-300"
+              aria-label="Close sidebar"
             >
               <X className="w-6 h-6" />
             </button>
@@ -124,20 +137,21 @@ export default function Layout({ children }: LayoutProps) {
 
       {/* Main content */}
       <div className={`transition-all duration-200 ${sidebarOpen ? 'lg:pl-64' : ''}`}>
-        {/* Top bar */}
         <div className="sticky top-0 z-40 flex h-16 bg-white border-b border-slate-200">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="px-4 text-slate-500 hover:text-slate-600 lg:hidden"
+            aria-label="Toggle sidebar"
           >
             <Menu className="w-6 h-6" />
           </button>
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="hidden px-4 text-slate-500 hover:text-slate-600 lg:block"
+            aria-label="Toggle sidebar"
           >
-            <Menu className="w-6 h-6" />
-          </button>
+          <Menu className="w-6 h-6" />
+        </button>
         </div>
 
         {/* Page content */}

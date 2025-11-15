@@ -1,14 +1,17 @@
 /**
  * Modules page component (Hub Master only).
  */
+import { useState } from 'react';
 import Layout from '../components/Layout';
+import ModuleConfigDialog from '../components/ModuleConfigDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../services/api';
 import { Settings, Power, PowerOff, TrendingUp } from 'lucide-react';
-import { ModuleStatus } from '../types';
+import { ModuleStatus, Module } from '../types';
 
 export default function ModulesPage() {
   const queryClient = useQueryClient();
+  const [configModule, setConfigModule] = useState<Module | null>(null);
 
   const { data: modules, isLoading } = useQuery({
     queryKey: ['modules'],
@@ -29,11 +32,29 @@ export default function ModulesPage() {
     },
   });
 
+  const updateConfigMutation = useMutation({
+    mutationFn: ({ id, config }: { id: string; config: Record<string, any> }) =>
+      api.updateModuleConfig(id, config),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['modules'] });
+    },
+  });
+
   const handleToggleModule = (id: string, currentStatus: ModuleStatus) => {
     if (currentStatus === ModuleStatus.ACTIVE) {
       deactivateMutation.mutate(id);
     } else {
       activateMutation.mutate(id);
+    }
+  };
+
+  const handleOpenConfig = (module: Module) => {
+    setConfigModule(module);
+  };
+
+  const handleSaveConfig = (config: Record<string, any>) => {
+    if (configModule) {
+      updateConfigMutation.mutate({ id: configModule.id, config });
     }
   };
 
@@ -120,7 +141,10 @@ export default function ModulesPage() {
                       </>
                     )}
                   </button>
-                  <button className="btn-outline">
+                  <button 
+                    className="btn-outline"
+                    onClick={() => handleOpenConfig(module)}
+                  >
                     Configure
                   </button>
                 </div>
@@ -139,6 +163,16 @@ export default function ModulesPage() {
           </div>
         )}
       </div>
+
+      {/* Configuration Dialog */}
+      {configModule && (
+        <ModuleConfigDialog
+          module={configModule}
+          isOpen={!!configModule}
+          onClose={() => setConfigModule(null)}
+          onSave={handleSaveConfig}
+        />
+      )}
     </Layout>
   );
 }

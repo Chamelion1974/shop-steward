@@ -108,7 +108,7 @@ async def create_job(
         priority=job_data.priority,
         deadline=job_data.deadline,
         assigned_to=job_data.assigned_to,
-        metadata=job_data.metadata,
+        job_metadata=job_data.job_metadata,
         created_by=current_user.id
     )
 

@@ -87,3 +87,17 @@ ARCHIVE/*
 !ARCHIVE/.gitkeep
 HOLDING/*
 !HOLDING/.gitkeep
+
+# Dependencies
+/node_modules
+/frontend/node_modules
+
+
+# Dependencies
+/node_modules
+/frontend/node_modules
+
+
+# Database files
+*.db
+

@@ -17,49 +17,49 @@ Shop Steward is a comprehensive production management ecosystem for CNC machine 
 ### The Hub - Central Command Center
 
 #### For Hub Masters (Production Managers)
-- 📊 **System Dashboard**: Real-time overview of jobs, tasks, and team performance
-- 👥 **User Management**: Create and manage Hub Caps (programmers/operators)
-- 🎛️ **Module Control**: Deploy, configure, and monitor system modules
-- 📈 **Analytics**: Production metrics, bottleneck detection, and performance insights
-- 🔧 **System Configuration**: Manage workflows, permissions, and integrations
+- **System Dashboard**: Real-time overview of jobs, tasks, and team performance
+- **User Management**: Create and manage Hub Caps (programmers/operators)
+- **Module Control**: Deploy, configure, and monitor system modules
+- **Analytics**: Production metrics, bottleneck detection, and performance insights
+- **System Configuration**: Manage workflows, permissions, and integrations
 
 #### For Hub Caps (CNC Programmers/Operators)
-- ✅ **Task Queue**: Personalized dashboard of assigned tasks
-- 💬 **Collaboration**: Comment and communicate on tasks and jobs
-- 📁 **File Management**: Upload CAD files, CNC programs, and documentation
-- ⏱️ **Time Tracking**: Log actual hours vs estimates for continuous improvement
-- 🔔 **Real-time Notifications**: Stay updated on job assignments and status changes
+- **Task Queue**: Personalized dashboard of assigned tasks
+- **Collaboration**: Comment and communicate on tasks and jobs
+- **File Management**: Upload CAD files, CNC programs, and documentation
+- **Time Tracking**: Log actual hours vs estimates for continuous improvement
+- **Real-time Notifications**: Stay updated on job assignments and status changes
 
 #### Core Hub Capabilities
-- 🎯 **Job Portal**: Central intake for all production work
-- 📝 **Shop Task Manager**: Intelligent task breakdown and assignment
-- 🔄 **Real-time Updates**: Live status changes via WebSocket connections
-- 🔐 **Role-Based Security**: Granular permissions and access control
-- 🧩 **Module System**: Plug-and-play architecture for custom extensions
-- 📊 **Activity Logging**: Complete audit trail of all operations
-- 🔍 **Search & Filter**: Find jobs, tasks, and files quickly
+- **Job Portal**: Central intake for all production work
+- **Shop Task Manager**: Intelligent task breakdown and assignment
+- **Real-time Updates**: Live status changes via WebSocket connections
+- **Role-Based Security**: Granular permissions and access control
+- **Module System**: Plug-and-play architecture for custom extensions
+- **Activity Logging**: Complete audit trail of all operations
+- **Search & Filter**: Find jobs, tasks, and files quickly
 
 ### File Organization (Housekeeper Module)
-- 🗂️ **Automated File Organization**: Categorizes files based on extensions
-- 📁 **Standardized Folder Structure**: Creates and maintains consistent folder hierarchy
-- 🏗️ **Hierarchical Organization**: Supports Customer → Part# + Revision structure
-- 🔍 **Smart Part Number Detection**: Automatically extracts part numbers and revisions from filenames
-- 📝 **Naming Convention Enforcement**: Validates and enforces standardized naming conventions
-- ✏️ **Auto-Rename**: Automatically renames files to match conventions
-- 👀 **Real-Time Monitoring**: "Hall monitor" mode watches directories and organizes files as they arrive
-- 🔒 **Safe Operations**: Never deletes files - everything goes to ARCHIVE or HOLDING
-- 🏷️ **Smart Categorization**: Recognizes common CAD, CAM, NC, and MPI file types
-- 📋 **Comprehensive Logging**: Tracks all operations for audit purposes
-- 🔍 **Dry Run Mode**: Preview changes before applying them
+- **Automated File Organization**: Categorizes files based on extensions
+- **Standardized Folder Structure**: Creates and maintains consistent folder hierarchy
+- **Hierarchical Organization**: Supports Customer → Part# + Revision structure
+- **Smart Part Number Detection**: Automatically extracts part numbers and revisions from filenames
+- **Naming Convention Enforcement**: Validates and enforces standardized naming conventions
+- **Auto-Rename**: Automatically renames files to match conventions
+- **Real-Time Monitoring**: "Hall monitor" mode watches directories and organizes files as they arrive
+- **Safe Operations**: Never deletes files - everything goes to ARCHIVE or HOLDING
+- **Smart Categorization**: Recognizes common CAD, CAM, NC, and MPI file types
+- **Comprehensive Logging**: Tracks all operations for audit purposes
+- **Dry Run Mode**: Preview changes before applying them
 
 ### Workflow Management
-- 📊 **Job Tracking**: Track CNC programming jobs from intake to production
-- 👥 **Programmer Assignment**: Assign jobs to programmers with workload balancing
-- ⏱️ **Time Tracking**: Measure programming time and cycle time automatically
-- 📈 **Workload Metrics**: Monitor programmer capacity and productivity
-- 🎯 **Priority Management**: Set job priorities for optimal scheduling
-- 📝 **Status Workflow**: INTAKE → QUEUED → IN_PROGRESS → REVIEW → READY
-- 📊 **Reporting**: Generate detailed status reports and analytics
+- **Job Tracking**: Track CNC programming jobs from intake to production
+- **Programmer Assignment**: Assign jobs to programmers with workload balancing
+- **Time Tracking**: Measure programming time and cycle time automatically
+- **Workload Metrics**: Monitor programmer capacity and productivity
+- **Priority Management**: Set job priorities for optimal scheduling
+- **Status Workflow**: INTAKE → QUEUED → IN_PROGRESS → REVIEW → READY
+- **Reporting**: Generate detailed status reports and analytics
 
 ## Folder Structure
 
@@ -111,45 +111,52 @@ ProgrammingServer/
 
 ## Quick Start - The Hub
 
-### Prerequisites
-- Python 3.11 or higher
-- Node.js 18 or higher
-- npm or yarn
+### Easy Installation
 
-### 1. Clone the repository
+**Windows:**
+```powershell
+git clone https://github.com/Chamelion1974/shop-steward.git
+cd shop-steward
+.\install.ps1
+.\start.ps1
+```
+
+**Linux/Mac:**
 ```bash
 git clone https://github.com/Chamelion1974/shop-steward.git
 cd shop-steward
+chmod +x install.sh start.sh
+./install.sh
+./start.sh
 ```
 
-### 2. Start the Backend
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
+That's it! The installation script will:
+- ✓ Check prerequisites (Python 3.11+, Node.js 18+)
+- ✓ Create Python virtual environment
+- ✓ Install all backend dependencies
+- ✓ Install all frontend dependencies
+- ✓ Set up configuration files
+- ✓ Create necessary directories
 
-Backend will be available at: http://localhost:8000
-API documentation at: http://localhost:8000/api/docs
+### Access the Hub
 
-### 3. Start the Frontend (new terminal)
-```bash
-cd frontend
-npm install
-npm run dev
-```
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8000
+- **API Docs**: http://localhost:8000/api/docs
 
-Frontend will be available at: http://localhost:5173
-
-### 4. Login
+### Default Login
 ```
 Username: admin
 Password: admin123
 ```
 
-⚠️ **Change the default password immediately after first login!**
+**Change the default password immediately after first login!** Go to Settings → Password after logging in.
+
+### Detailed Installation
+
+For detailed installation instructions, troubleshooting, and production deployment, see [INSTALL.md](INSTALL.md).
+
+For quick command reference, see [QUICK_REFERENCE.md](QUICK_REFERENCE.md).
 
 ---
 
@@ -279,9 +286,9 @@ Shop Steward can enforce standardized naming conventions to ensure consistency a
 **Expected Format:** `PARTNUMBER_REV-X_description.ext`
 
 **Examples:**
-- `ABC-123_REV-A_housing.step` ✅
-- `XYZ-789_REV-B_toolpath.cam` ✅
-- `PART456_REV-1_drawing.dwg` ✅
+- `ABC-123_REV-A_housing.step` 
+- `XYZ-789_REV-B_toolpath.cam` 
+- `PART456_REV-1_drawing.dwg` 
 
 ```bash
 # Check files against naming conventions and report violations

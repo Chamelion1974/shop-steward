@@ -29,11 +29,17 @@ def load_modules(config: Dict[str, Any] = None) -> Dict[str, BaseModule]:
     config = config or {}
     loaded_modules = {}
 
+    # Get user's home directory for cross-platform default paths
+    from pathlib import Path
+    import os
+    home_dir = Path.home()
+    shop_steward_dir = home_dir / "ShopSteward"
+
     # Load Housekeeper Module
     if SHOP_STEWARD_AVAILABLE:
         try:
             housekeeper_config = config.get("housekeeper", {
-                "root_dir": "/data/shop",
+                "root_dir": str(shop_steward_dir / "files"),
                 "hierarchical": True,
                 "enforce_naming": True,
                 "auto_rename": False
@@ -51,7 +57,7 @@ def load_modules(config: Dict[str, Any] = None) -> Dict[str, BaseModule]:
     if WORKFLOW_AVAILABLE:
         try:
             workflow_config = config.get("workflow_manager", {
-                "workflow_dir": "/data/workflow"
+                "workflow_dir": str(shop_steward_dir / "workflow")
             })
             workflow = WorkflowModule(config=workflow_config)
             if registry.register(workflow):

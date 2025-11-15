@@ -41,7 +41,7 @@ class Job(Base):
     status = Column(SQLEnum(JobStatus), default=JobStatus.PENDING, index=True)
     deadline = Column(DateTime, nullable=True)
     files = Column(JSON, default=list)  # Array of file references
-    metadata = Column(JSON, default=dict)  # Additional job-specific data
+    job_metadata = Column(JSON, default=dict)  # Additional job-specific data
     created_by = Column(String, ForeignKey("users.id"), nullable=False)
     assigned_to = Column(String, ForeignKey("users.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
@@ -52,7 +52,6 @@ class Job(Base):
     creator = relationship("User", back_populates="created_jobs", foreign_keys=[created_by])
     assignee = relationship("User", back_populates="assigned_jobs", foreign_keys=[assigned_to])
     tasks = relationship("Task", back_populates="job", cascade="all, delete-orphan")
-    activity_logs = relationship("ActivityLog", back_populates="job")
 
     def __repr__(self):
         return f"<Job {self.job_number} - {self.title}>"

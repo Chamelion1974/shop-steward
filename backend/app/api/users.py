@@ -8,9 +8,9 @@ import uuid
 
 from ..database import get_db
 from ..models.user import User
-from ..schemas.user import UserCreate, UserUpdate, UserResponse
+from ..schemas.user import UserCreate, UserUpdate, UserResponse, PasswordChange
 from ..core.auth import get_current_active_user, require_hub_master
-from ..core.security import get_password_hash
+from ..core.security import get_password_hash, verify_password
 
 
 router = APIRouter()
@@ -162,3 +162,71 @@ async def delete_user(
     db.commit()
 
     return None
+
+
+@router.patch("/me", response_model=UserResponse)
+async def update_current_user(
+    user_data: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Update current user's profile (limited fields).
+    Users can only update their own full_name and email.
+    """
+    # Only allow updating specific fields
+    allowed_fields = {'full_name', 'email'}
+    update_data = user_data.model_dump(exclude_unset=True)
+
+    # Filter to only allowed fields
+    filtered_data = {k: v for k, v in update_data.items() if k in allowed_fields}
+
+    if not filtered_data:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No valid fields to update"
+        )
+
+    # Check if email is being changed and is unique
+    if 'email' in filtered_data:
+        existing_email = db.query(User).filter(
+            User.email == filtered_data['email'],
+            User.id != current_user.id
+        ).first()
+        if existing_email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email already in use"
+            )
+
+    # Update fields
+    for field, value in filtered_data.items():
+        setattr(current_user, field, value)
+
+    db.commit()
+    db.refresh(current_user)
+
+    return current_user
+
+
+@router.post("/me/change-password", status_code=status.HTTP_200_OK)
+async def change_password(
+    password_data: PasswordChange,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    Change current user's password.
+    """
+    # Verify current password
+    if not verify_password(password_data.current_password, current_user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password is incorrect"
+        )
+
+    # Update password
+    current_user.hashed_password = get_password_hash(password_data.new_password)
+    db.commit()
+
+    return {"message": "Password updated successfully"}

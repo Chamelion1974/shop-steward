@@ -17,10 +17,10 @@ async def lifespan(app: FastAPI):
     Handles startup and shutdown events.
     """
     # Startup
-    print("🚀 Starting The Hub...")
+    print("Starting The Hub...")
 
     # Create database tables
-    print("📊 Creating database tables...")
+    print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
 
     # Initialize default admin user if none exists
@@ -33,49 +33,49 @@ async def lifespan(app: FastAPI):
     try:
         admin_count = db.query(User).filter(User.role == UserRole.HUB_MASTER).count()
         if admin_count == 0:
-            print("👤 Creating default admin user...")
+            print("Creating default admin user...")
             admin = User(
                 id=str(uuid.uuid4()),
                 username="admin",
-                email="admin@shopsteward.local",
-                full_name="Hub Master",
+                email="camprocsol@gmail.com",
+                full_name="",
                 hashed_password=get_password_hash("admin123"),
                 role=UserRole.HUB_MASTER,
                 skills=[]
             )
             db.add(admin)
             db.commit()
-            print("✅ Default admin created (username: admin, password: admin123)")
-            print("⚠️  Please change the default password immediately!")
+            print("Default admin created (username: admin, password: admin123)")
+            print("WARNING: Please change the default password and update your profile immediately!")
     finally:
         db.close()
 
     # Load and register modules
-    print("🧩 Loading modules...")
+    print("Loading modules...")
     from .modules.loader import load_modules, sync_modules_to_database
 
     try:
         loaded_modules = load_modules()
-        print(f"✅ Loaded {len(loaded_modules)} modules:")
+        print(f"Loaded {len(loaded_modules)} modules:")
         for module_name, module in loaded_modules.items():
             print(f"   - {module.display_name} v{module.version}")
 
         # Sync modules to database
-        print("💾 Syncing modules to database...")
+        print("Syncing modules to database...")
         sync_modules_to_database()
-        print("✅ Module sync complete")
+        print("Module sync complete")
 
     except Exception as e:
-        print(f"⚠️  Error loading modules: {e}")
+        print(f"WARNING: Error loading modules: {e}")
         import traceback
         traceback.print_exc()
 
-    print("✨ The Hub is ready!")
+    print("The Hub is ready!")
 
     yield
 
     # Shutdown
-    print("👋 Shutting down The Hub...")
+    print("Shutting down The Hub...")
 
 
 # Create FastAPI app
