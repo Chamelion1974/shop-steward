@@ -59,6 +59,16 @@ class Settings(BaseSettings):
     # WebSocket
     WS_HEARTBEAT_INTERVAL: int = 30  # seconds
 
+    # Email Configuration
+    SMTP_HOST: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    SMTP_PORT: int = int(os.getenv("SMTP_PORT", "587"))
+    SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "adam.govoni74@gmail.com")
+    SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")  # Set via environment variable
+    SMTP_FROM_EMAIL: str = os.getenv("SMTP_FROM_EMAIL", "adam.govoni74@gmail.com")
+    SMTP_FROM_NAME: str = os.getenv("SMTP_FROM_NAME", "Shop Steward - The Hub")
+    FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:5173")
+    PASSWORD_RESET_TOKEN_EXPIRE_HOURS: int = 1
+
     class Config:
         env_file = ".env"
         case_sensitive = True

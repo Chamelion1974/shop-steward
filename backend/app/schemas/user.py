@@ -79,3 +79,19 @@ class PasswordChange(BaseModel):
     """Password change schema."""
     current_password: str
     new_password: str = Field(..., min_length=8)
+
+
+class ForgotPasswordRequest(BaseModel):
+    """Forgot password request schema."""
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    """Reset password request schema."""
+    token: str
+    new_password: str = Field(..., min_length=8)
+
+
+class MessageResponse(BaseModel):
+    """Generic message response schema."""
+    message: str

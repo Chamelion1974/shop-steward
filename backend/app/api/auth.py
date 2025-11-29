@@ -7,9 +7,12 @@ from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.user import User
-from ..schemas.user import Token, UserResponse
-from ..core.security import verify_password, create_access_token, create_refresh_token
+from ..models.password_reset import PasswordResetToken
+from ..schemas.user import Token, UserResponse, ForgotPasswordRequest, ResetPasswordRequest, MessageResponse
+from ..core.security import verify_password, create_access_token, create_refresh_token, get_password_hash
 from ..core.auth import get_current_active_user
+from ..core.email import EmailService
+from datetime import datetime
 
 
 router = APIRouter()
@@ -116,3 +119,108 @@ async def logout():
     This endpoint exists for consistency and could be extended for token blacklisting.
     """
     return {"message": "Successfully logged out"}
+
+
+@router.post("/forgot-password", response_model=MessageResponse)
+async def forgot_password(
+    request: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Request password reset.
+    Sends a password reset email to the user if the email exists.
+    Always returns success to prevent user enumeration.
+    """
+    # Find user by email
+    user = db.query(User).filter(User.email == request.email).first()
+
+    if user and user.is_active:
+        # Delete any existing reset tokens for this user
+        db.query(PasswordResetToken).filter(
+            PasswordResetToken.user_id == user.id
+        ).delete()
+
+        # Create new reset token
+        reset_token = PasswordResetToken(
+            user_id=user.id,
+            token=PasswordResetToken.generate_token(),
+            expires_at=PasswordResetToken.get_expiry_time()
+        )
+        db.add(reset_token)
+        db.commit()
+
+        # Send password reset email
+        EmailService.send_password_reset_email(
+            to_email=user.email,
+            reset_token=reset_token.token,
+            username=user.username
+        )
+
+    # Always return success to prevent user enumeration
+    return {
+        "message": "If the email exists, a password reset link has been sent."
+    }
+
+
+@router.post("/reset-password", response_model=MessageResponse)
+async def reset_password(
+    request: ResetPasswordRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Reset password using token from email.
+    """
+    # Find reset token
+    reset_token = db.query(PasswordResetToken).filter(
+        PasswordResetToken.token == request.token
+    ).first()
+
+    # Validate token
+    if not reset_token or not reset_token.is_valid():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    # Get user
+    user = db.query(User).filter(User.id == reset_token.user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    # Update password
+    user.hashed_password = get_password_hash(request.new_password)
+    user.updated_at = datetime.utcnow()
+
+    # Mark token as used
+    reset_token.used_at = datetime.utcnow()
+
+    db.commit()
+
+    return {"message": "Password has been reset successfully"}
+
+
+@router.get("/verify-reset-token/{token}", response_model=MessageResponse)
+async def verify_reset_token(
+    token: str,
+    db: Session = Depends(get_db)
+):
+    """
+    Verify if a password reset token is valid.
+    Useful for frontend validation before showing the reset form.
+    """
+    # Find reset token
+    reset_token = db.query(PasswordResetToken).filter(
+        PasswordResetToken.token == token
+    ).first()
+
+    # Validate token
+    if not reset_token or not reset_token.is_valid():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+
+    return {"message": "Token is valid"}

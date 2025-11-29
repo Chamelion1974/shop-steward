@@ -180,7 +180,7 @@ def main():
     # Create job
     create_parser = subparsers.add_parser('create', help='Create a new job')
     create_parser.add_argument('customer', help='Customer name')
-    create_parser.add_parser('part', help='Part number')
+    create_parser.add_argument('part', help='Part number')
     create_parser.add_argument('revision', help='Revision level')
     create_parser.add_argument('--priority', type=int, default=2, choices=[1,2,3,4],
                               help='Priority (1=low, 2=normal, 3=high, 4=urgent)')

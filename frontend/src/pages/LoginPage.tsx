@@ -2,7 +2,7 @@
  * Login page component.
  */
 import { useState, FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { LogIn } from 'lucide-react';
 
@@ -64,9 +64,17 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                  Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-hub-primary hover:text-hub-secondary transition-colors"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"
